@@ -1,0 +1,131 @@
+- name: "Setup Target 2 for Web Application Database Hosting"
+  hosts: ansible-target2
+  become: true # set for privilege escalation at playbook scope
+  tasks:
+  - name: "Install Firewalld"
+    yum:
+      name: firewalld
+      state: present
+    become: true
+  - name: "Start and Enable Firewalld Service"
+    service:
+      name: firewalld
+      state: started
+      enabled: yes
+  - name: "Install MariaDB"
+    yum:
+      name: mariadb-server
+      state: present
+    become: true
+  - name: "Start and Enable MariaDB Service"
+    service:
+      name: mariadb
+      state: started
+      enabled: yes
+  - name: 'installing python-3 mysql libraries'
+    yum: 
+      name: MySQL-python
+      state: present
+  - name: "Add port 3306 to firewalld"
+    command: firewall-cmd --permanent --zone=public --add-port=3306/tcp
+    become: true
+  - name: "Reload Firewalld"
+    command: firewall-cmd --reload
+    become: true
+  - name: "Create ecomdb MariaDB Database"
+    mysql_db:
+      name: ecomdb
+      state: present
+  - name: "Create user ecomuser in MariaDB"
+    mysql_user:
+      name: ecomuser
+      password: ecompassword
+      priv: '*.*:ALL,GRANT'
+      host: 192.168.0.46
+      state: present
+  - name: Reload privilege tables
+    command: 'mysql -ne "{{ item }}"'
+    with_items:
+    - FLUSH PRIVILEGES
+    changed_when: False
+  - name: "Create Database Loader Script"
+    copy:
+      dest: "/home/db-load-script.sql"
+      content: |
+        USE ecomdb;
+        CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+        INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+  
+  - name: "Initiate Database Script"
+    shell: mysql < /home/db-load-script.sql
+    ignore_errors: yes
+
+
+- name: "Setup Target1 for Web Application Hosting"
+  hosts: ansible-target1
+  become: true
+  tasks:
+  - name: "Install Firewalld"
+    yum:
+      name: firewalld
+      state: present
+    become: true
+  - name: "Start and Enable Firewalld Service"
+    service:
+      name: firewalld
+      state: started
+      enabled: yes
+  - name: "Install Required Packages for Apache Web Server"
+    yum: 
+      name: '{{item}}'
+      state: present
+    become: true
+    loop:
+      - httpd
+      - php
+      - php-mysql
+  - name: "Add port 80 to firewalld"
+    command: firewall-cmd --permanent --zone=public --add-port=80/tcp
+    become: true
+  - name: "Reload Firewalld to allow changes"
+    command: firewall-cmd --reload
+    become: true
+  - name: "Add port 3306 to firewalld"
+    command: firewall-cmd --permanent --zone=public --add-port=3306/tcp
+    become: true
+  - name: "Reload Firewalld"
+    command: firewall-cmd --reload
+    become: true
+
+  - name: "Configure httpd to use index.php"
+    shell: sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
+    become: true
+  - name: "start and enable httpd service"
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    become: true
+  - name: "Install git to clone source code down"
+    yum:
+      name: git
+      state: present
+  - name: "Check if GitHub Repo is on system"
+    stat:
+      path: /var/www/html/README.md
+    register: git_exists
+  - name: "Clone Application Repo"
+    command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
+    when: git_exists.stat.exists == False
+  - name: "Point index.php to Database Server"
+    shell: sed -i 's/172.20.1.101/192.168.0.48/g' /var/www/html/index.php
+    become: true
+  - name: "Test httpd webhost"
+    uri:
+      url: http://localhost
+      return_content: yes
+  - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+    ansible.posix.seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
