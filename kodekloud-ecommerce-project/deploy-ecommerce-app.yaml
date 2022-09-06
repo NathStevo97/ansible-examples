@@ -41,7 +41,7 @@
       name: ecomuser
       password: ecompassword
       priv: '*.*:ALL,GRANT'
-      host: 192.168.0.46
+      host: 192.168.1.199
       state: present
   - name: Reload privilege tables
     command: 'mysql -ne "{{ item }}"'
@@ -118,7 +118,7 @@
     command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
     when: git_exists.stat.exists == False
   - name: "Point index.php to Database Server"
-    shell: sed -i 's/172.20.1.101/192.168.0.48/g' /var/www/html/index.php
+    shell: sed -i 's/192.168.0.48/192.168.1.154/g' /var/www/html/index.php
     become: true
   - name: "Test httpd webhost"
     uri:

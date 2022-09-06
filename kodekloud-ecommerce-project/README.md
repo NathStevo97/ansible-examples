@@ -2,6 +2,6 @@
 
 ## To-Dos:
 - Refactoring:
-  - Variables
+  - Variables (general and also to cover off possible changes in IPs)
   - Roles
   - Templates
