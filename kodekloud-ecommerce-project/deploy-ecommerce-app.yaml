@@ -36,12 +36,12 @@
     mysql_db:
       name: ecomdb
       state: present
-  - name: "Create user ecomuser in MariaDB"
+  - name: "Create user ecomuser in MariaDB accessing from WebSever (Target1)"
     mysql_user:
       name: ecomuser
       password: ecompassword
       priv: '*.*:ALL,GRANT'
-      host: 192.168.1.199
+      host: 192.168.23.129
       state: present
   - name: Reload privilege tables
     command: 'mysql -ne "{{ item }}"'
@@ -117,8 +117,8 @@
   - name: "Clone Application Repo"
     command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
     when: git_exists.stat.exists == False
-  - name: "Point index.php to Database Server"
-    shell: sed -i 's/192.168.0.48/192.168.1.154/g' /var/www/html/index.php
+  - name: "Point index.php to Database Server (Target2)"
+    shell: sed -i 's/192.168.1.154/192.168.23.130/g' /var/www/html/index.php
     become: true
   - name: "Test httpd webhost"
     uri:
