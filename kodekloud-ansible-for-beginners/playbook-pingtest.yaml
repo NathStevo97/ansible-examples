@@ -1,5 +1,0 @@
-- name: Test Connectivity to Target Servers # name of playbook
-  hosts: all # what hosts should this playbook apply to?
-  tasks:
-  - name: Ping Test # task name
-    ping:
