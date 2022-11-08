@@ -1,4 +1,4 @@
-- name: "Setup Target 2 for Web Application Database Hosting"
+- name: "Undo Setup Target 2 for Web Application Database Hosting"
   hosts: ansible-target2
   become: true # set for privilege escalation at playbook scope
   tasks:
@@ -25,4 +25,34 @@
     yum:
       name: firewalld
       state: present
+    become: true
+
+- name: "Undo  Target1 for Web Application Hosting"
+  hosts: ansible-target1
+  become: true
+  tasks:
+  - name: "Check if GitHub Repo is on system"
+    stat:
+      path: /var/www/html/README.md
+    register: git_exists
+  - name: "Delete  Application Repo"
+    command: rm -r /var/www/html/
+    when: git_exists.stat.exists == True
+  - name: "Uninstall git to clone source code down"
+    yum:
+      name: git
+      state: absent
+  - name: "Uninstall Required Packages for Apache Web Server"
+    yum: 
+    name: '{{item}}'
+    state: absent
+    become: true
+    loop:
+    - httpd
+    - php
+    - php-mysql
+  - name: "Uninstall Firewalld"
+    yum:
+      name: firewalld
+      state: absent
     become: true
