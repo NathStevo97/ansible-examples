@@ -1,0 +1,28 @@
+- name: "Setup Target 2 for Web Application Database Hosting"
+  hosts: ansible-target2
+  become: true # set for privilege escalation at playbook scope
+  tasks:
+  - name: "Delete user ecomuser in MariaDB accessing from WebSever (Target1)"
+    mysql_user:
+        name: ecomuser
+        password: ecompassword
+        host: 192.168.23.129
+        state: absent
+  - name: "Delete ecomdb MariaDB Database"
+    mysql_db:
+      name: ecomdb
+      state: absent
+  - name: 'uninstalling python-3 mysql libraries'
+    yum: 
+      name: MySQL-python
+      state: absent
+  - name: "Uninstall MariaDB"
+    yum:
+      name: mariadb-server
+      state: absent
+    become: true 
+  - name: "Uninstall Firewalld"
+    yum:
+      name: firewalld
+      state: present
+    become: true
