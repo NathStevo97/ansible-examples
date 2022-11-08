@@ -44,8 +44,8 @@
       state: absent
   - name: "Uninstall Required Packages for Apache Web Server"
     yum: 
-    name: '{{item}}'
-    state: absent
+      name: '{{item}}'
+      state: absent
     become: true
     loop:
     - httpd

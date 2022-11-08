@@ -118,7 +118,7 @@
     command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
     when: git_exists.stat.exists == False
   - name: "Point index.php to Database Server (Target2)"
-    shell: sed -i 's/192.168.1.154/192.168.23.130/g' /var/www/html/index.php
+    shell: sed -i 's/172.20.1.101/192.168.23.130/g' /var/www/html/index.php
     become: true
   - name: "Test httpd webhost"
     uri:
