@@ -1,2 +1,3 @@
 *.txt
 kodekloud-ecommerce-project/*.txt
+./kodekloud-ecommerce-project/vars/server_ips.yaml

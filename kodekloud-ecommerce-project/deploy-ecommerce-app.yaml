@@ -1,6 +1,9 @@
 - name: "Setup Target 2 for Web Application Database Hosting"
   hosts: ansible-target2
   become: true # set for privilege escalation at playbook scope
+  vars_files:
+  - ./vars/db_creds.yaml
+  - ./vars/server_ips.yaml
   tasks:
   - name: "Install Firewalld"
     yum:
@@ -34,14 +37,14 @@
     become: true
   - name: "Create ecomdb MariaDB Database"
     mysql_db:
-      name: ecomdb
+      name: '{{ db_name }}'
       state: present
   - name: "Create user ecomuser in MariaDB accessing from WebSever (Target1)"
     mysql_user:
-      name: ecomuser
-      password: ecompassword
+      name: '{{db_user}}'
+      password: '{{db_password}}'
       priv: '*.*:ALL,GRANT'
-      host: 192.168.23.129
+      host: '{{ web_server_ip  }}'
       state: present
   - name: Reload privilege tables
     command: 'mysql -ne "{{ item }}"'
@@ -64,6 +67,8 @@
 - name: "Setup Target1 for Web Application Hosting"
   hosts: ansible-target1
   become: true
+  vars_files:
+  - ./vars/server_ips.yaml
   tasks:
   - name: "Install Firewalld"
     yum:
@@ -118,7 +123,7 @@
     command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
     when: git_exists.stat.exists == False
   - name: "Point index.php to Database Server (Target2)"
-    shell: sed -i 's/172.20.1.101/192.168.23.130/g' /var/www/html/index.php
+    shell: sed -i 's/172.20.1.101/{{db_server_ip}}/g' /var/www/html/index.php
     become: true
   - name: "Test httpd webhost"
     uri:
