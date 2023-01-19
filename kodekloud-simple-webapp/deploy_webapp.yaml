@@ -2,6 +2,10 @@
  - name: "Deploy Monolithic Web Application"
    hosts: ansible-target1, ansible-target2
    become: true
+   vars:
+     db_name: employee_db
+     db_user_password: Passw0rd
+     db_user: db_user
    tasks:
    - name: "Test Connection"
      ansible.builtin.ping:
@@ -12,9 +16,7 @@
      loop:
      - "epel-release"
      - "python3"
-     - "python-pip"
      - "python-devel"
-     - "MySQL-python"
      - "git"
    - name: "Install MySQL Community Repository"
      yum:
@@ -40,16 +42,26 @@
        name: mysqld
        state: started
        enabled: yes
+
+   - name: "Install MYSQL-Python Package"
+     yum:
+       name: "MySQL-python"
+       state: present
+   - name: "Install pip"
+     yum:
+       name: "python-pip"
+       state: present
+
    - name: "Create Application Database"
      community.mysql.mysql_db:
-       name: employee_db
+       name: "{{ db_name }}"
        state: present
    - name: "Upgrade MySQL Database"
      shell: mysql_upgrade --force
    - name: "Create Application DB User"
      mysql_user:
-       name: db_user
-       password: Passw0rd
+       name: "{{ db_user }}"
+       password: "{{ db_user_password }}"
        priv: '*.*:ALL'
        state: present
    - name: "Install Python Flask Dependencies"
