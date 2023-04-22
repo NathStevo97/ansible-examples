@@ -5,6 +5,10 @@
   - ./vars/db_creds.yaml
   - ./vars/server_ips.yaml
   tasks:
+  - name: "Upgrade Yum Packages"
+    yum:
+      name: '*'
+      state: latest
   - name: "Install Firewalld"
     yum:
       name: firewalld
@@ -20,15 +24,15 @@
       name: mariadb-server
       state: present
     become: true
-  - name: "Start and Enable MariaDB Service"
-    service:
-      name: mariadb
-      state: started
-      enabled: yes
   - name: 'installing python-3 mysql libraries'
     yum: 
       name: MySQL-python
       state: present
+  - name:  "Start and Enable MariaDB Service"
+    service: 
+      name: mariadb
+      state: started
+      enabled: yes
   - name: "Add port 3306 to firewalld"
     command: firewall-cmd --permanent --zone=public --add-port=3306/tcp
     become: true
@@ -70,6 +74,10 @@
   vars_files:
   - ./vars/server_ips.yaml
   tasks:
+  - name: "Upgrade Yum Packages"
+    yum:
+      name: '*'
+      state: latest
   - name: "Install Firewalld"
     yum:
       name: firewalld

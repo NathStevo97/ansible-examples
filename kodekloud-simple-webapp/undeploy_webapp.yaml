@@ -1,0 +1,59 @@
+ - name: "Undeploy Monolithic Web Application"
+   hosts: ansible-target1, ansible-target2
+   become: true
+   vars:
+     db_name: employee_db
+     db_user_password: Passw0rd
+     db_user: db_user
+   tasks:
+   - name: "Test Connection"
+     ansible.builtin.ping:
+   - name: "Get the PID for the Flask App"
+     shell: "ps aux | grep -v grep | grep 'python3 -m flask run --host=0.0.0.0' | awk '{print $2}'"
+     register: _process
+   - name: "Kill the Flask App Backgroudnd Process"
+     shell: "kill -9 {{ item }}"
+     with_items:
+     - "{{ _process.stdout_lines }}"
+   - name: "Remove web-server code"
+     ansible.builtin.file:
+       path: /opt/simple-webapp
+       state: absent
+   - name: "Uninstall Python Flask Dependencies"
+     ansible.builtin.pip:
+       state: absent
+       name:
+       - "Flask"
+       - "Flask-MySQL"
+       executable: pip3
+     with_items:
+      - flask
+      - flask-mysql
+   - name: "Delete Application Database"
+     community.mysql.mysql_db:
+       name: "{{ db_name }}"
+       state: absent
+   - name: "Uninstall pip"
+     yum:
+       name: "python-pip"
+       state: absent
+   - name: "Uninstall MySQL database"
+     yum:
+       name: "{{ item }}"
+       state: absent
+     loop:
+        - "mysql-server"
+        - "mysql-devel"
+   - name: "Uninstall MySQL Community Repository"
+     yum:
+       name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
+       state: absent
+   - name: "Uninstall Dependencies"
+     yum:
+       name: '{{item}}'
+       state: absent
+     loop:
+     - "epel-release"
+     - "python3"
+     - "python-devel"
+     - "git"

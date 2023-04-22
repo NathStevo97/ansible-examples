@@ -85,5 +85,5 @@
    - name: "Clone Application Repo"
      command: git clone https://github.com/mmumshad/simple-webapp.git /opt/simple-webapp
      when: not git_exists.stat.exists
-   - name: "Run WebSever"   
+   - name: "Run WebSever"
      shell: FLASK_APP=/opt/simple-webapp/app.py nohup python3 -m flask run --host=0.0.0.0 &
