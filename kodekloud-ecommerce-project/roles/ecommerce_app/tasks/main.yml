@@ -1,0 +1,58 @@
+---
+# tasks file for ecommerce_app
+  - name: "Install Required Packages for Apache Web Server"
+    yum: 
+      name: '{{item}}'
+      state: present
+    become: true
+    loop:
+      - httpd
+      - php
+      - php-mysql
+  - name: "Add port 80 to firewalld"
+    command: firewall-cmd --permanent --zone=public --add-port=80/tcp
+    become: true
+  - name: "Reload Firewalld to allow changes"
+    command: firewall-cmd --reload
+    become: true
+  - name: "Add port 3306 to firewalld"
+    command: firewall-cmd --permanent --zone=public --add-port=3306/tcp
+    become: true
+  - name: "Reload Firewalld"
+    command: firewall-cmd --reload
+    become: true
+
+  - name: "Configure httpd to use index.php"
+    shell: sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
+    become: true
+  - name: "start and enable httpd service"
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    become: true
+  - name: "Install git to clone source code down"
+    yum:
+      name: git
+      state: present
+  - name: "Check if GitHub Repo is on system"
+    stat:
+      path: /var/www/html/README.md
+    register: git_exists
+  - name: "Clone Application Repo"
+    command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
+    when: git_exists.stat.exists == False
+  - name: "Point index.php to Database Server (Target2)"
+    shell: sed -i 's/172.20.1.101/{{db_server_ip}}/g' /var/www/html/index.php
+    become: true
+  - name: "Test httpd webhost"
+    uri:
+      url: http://localhost
+      return_content: yes
+  - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+    ansible.posix.seboolean:
+      name: httpd_can_network_connect
+      state: yes
+      persistent: yes
+
+

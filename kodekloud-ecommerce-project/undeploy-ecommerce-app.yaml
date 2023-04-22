@@ -1,9 +1,6 @@
 - name: "Undo Setup Target 2 for Web Application Database Hosting"
   hosts: ansible-target2
   become: true # set for privilege escalation at playbook scope
-  vars_files:
-  - ./vars/db_creds.yaml 
-  - ./vars/server_ips.yaml
   tasks:
   - name: "Delete user ecomuser in MariaDB accessing from WebSever (Target1)"
     mysql_user:
@@ -29,6 +26,10 @@
       name: firewalld
       state: present
     become: true
+  - name: "Remove MariaDB Setup File"
+    ansible.builtin.file:
+      path: /mariadb_repo_setup
+      state: absent
 
 - name: "Undo  Target1 for Web Application Hosting"
   hosts: ansible-target1

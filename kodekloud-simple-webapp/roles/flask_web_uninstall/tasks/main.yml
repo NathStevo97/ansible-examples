@@ -1,0 +1,24 @@
+---
+# tasks file for flask_web_uninstall
+   - name: "Get the PID for the Flask App"
+     shell: "ps aux | grep -v grep | grep 'python3 -m flask run --host=0.0.0.0' | awk '{print $2}'"
+     register: _process
+   - name: "Kill the Flask App Backgroudnd Process"
+     shell: "kill -9 {{ item }}"
+     with_items:
+     - "{{ _process.stdout_lines }}"
+   - name: "Remove web-server code"
+     ansible.builtin.file:
+       path: /opt/simple-webapp
+       state: absent
+   - name: "Uninstall Python Flask Dependencies"
+     ansible.builtin.pip:
+       state: absent
+       name:
+       - "Flask"
+       - "Flask-MySQL"
+       executable: pip3
+     with_items:
+      - flask
+      - flask-mysql
+

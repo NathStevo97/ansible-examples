@@ -1,0 +1,16 @@
+---
+# tasks file for firewalld
+  - name: "Upgrade Yum Packages"
+    yum:
+      name: '*'
+      state: latest  
+  - name: "Install Firewalld"
+    yum:
+      name: firewalld
+      state: present
+    become: true
+  - name: "Start and Enable Firewalld Service"
+    service:
+      name: firewalld
+      state: started
+      enabled: yes

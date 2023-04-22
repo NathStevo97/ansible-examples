@@ -1,0 +1,34 @@
+---
+# tasks file for flask_web
+- name: "Install Python Flask Dependencies"
+  ansible.builtin.pip:
+    name:
+    - "Flask"
+    - "Flask-MySQL"
+    executable: pip3
+- name: "Check if Application Repo Exists"
+  stat:
+    path: /opt/simple-webapp
+  register: git_exists
+- name: "Report Application Repo Exists"
+  debug:
+    msg: "Application Repo is already on system"
+  when: git_exists.stat.exists
+- name: "Report if Application Does not Repo Exists"
+  debug:
+    msg: "Application Repo is not on system"
+  when: not git_exists.stat.exists
+- name: "Clone Application Repo"
+  command: git clone https://github.com/mmumshad/simple-webapp.git /opt/simple-webapp
+  when: not git_exists.stat.exists
+- name: "SEt MYSQL_DATABASE_HOST Env Variable"
+  ansible.builtin.lineinfile:
+    dest: "/etc/environment"
+    state: present
+    line: "MYSQL_DATABASE_HOST={{ db_server_ip }}"
+- name: "Run WebSever"
+  shell: FLASK_APP=/opt/simple-webapp/app.py nohup python3 -m flask run --host=0.0.0.0 &
+- name: "Test httpd webhost"
+  uri:
+    url: http://localhost:5000
+    return_content: yes

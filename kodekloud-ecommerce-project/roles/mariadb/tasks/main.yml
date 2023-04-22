@@ -1,0 +1,62 @@
+---
+# tasks file for mariadb
+  - name: "MariaDB Prerequisite - Install WGET"
+    yum:
+      name: wget
+      state: latest
+  - name: "MariaDB Prerequisite: Download Repo Setup"
+    command: 'wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup'
+  - name: "Grant Permissions to repo setup script"
+    command: 'chmod +x mariadb_repo_setup'
+  - name: "Execute Repo Setup Script for MariaDB"
+    command: 'bash -c ./mariadb_repo_setup'
+    register: command_result
+  - name: "Install MariaDB"
+    yum:
+      name: mariadb-server
+      state: latest
+    become: true
+  - name: 'installing python-3 mysql libraries'
+    yum: 
+      name: MySQL-python
+      state: present
+  - name:  "Start and Enable MariaDB Service"
+    service: 
+      name: mariadb
+      state: started
+      enabled: yes
+  - name: "Add port 3306 to firewalld"
+    command: firewall-cmd --permanent --zone=public --add-port=3306/tcp
+    become: true
+  - name: "Reload Firewalld"
+    command: firewall-cmd --reload
+    become: true
+  - name: "Create ecomdb MariaDB Database"
+    mysql_db:
+      name: '{{ db_name }}'
+      state: present
+  - name: "Create user ecomuser in MariaDB accessing from WebSever (Target1)"
+    mysql_user:
+      name: '{{db_user}}'
+      password: '{{db_password}}'
+      priv: '*.*:ALL,GRANT'
+      host: '{{ web_server_ip  }}'
+      state: present
+  - name: Reload privilege tables
+    command: 'mysql -ne "{{ item }}"'
+    with_items:
+    - FLUSH PRIVILEGES
+    changed_when: False
+  - name: "Create Database Loader Script"
+    copy:
+      dest: "/home/db-load-script.sql"
+      content: |
+        USE ecomdb;
+        CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+        INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+  
+  - name: "Initiate Database Script"
+    shell: mysql < /home/db-load-script.sql
+    ignore_errors: yes
+
+

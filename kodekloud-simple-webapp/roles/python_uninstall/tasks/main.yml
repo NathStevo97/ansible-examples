@@ -1,0 +1,11 @@
+---
+# tasks file for python_uninstall
+   - name: "Uninstall Dependencies"
+     yum:
+       name: '{{item}}'
+       state: absent
+     loop:
+     - "epel-release"
+     - "python3"
+     - "python-devel"
+     - "git"

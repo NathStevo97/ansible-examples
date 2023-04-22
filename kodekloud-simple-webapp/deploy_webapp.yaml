@@ -1,89 +1,14 @@
 # Ansible Playbook - Deploy monolithic Web Server (Debian)
- - name: "Deploy Monolithic Web Application"
-   hosts: ansible-target1, ansible-target2
+ - name: "Deploy MySQL Database"
+   hosts: ansible-target1
    become: true
-   vars:
-     db_name: employee_db
-     db_user_password: Passw0rd
-     db_user: db_user
-   tasks:
-   - name: "Test Connection"
-     ansible.builtin.ping:
-   - name: "Install Dependencies"
-     yum: 
-       name: '{{item}}'
-       state: present
-     loop:
-     - "epel-release"
-     - "python3"
-     - "python-devel"
-     - "git"
-   - name: "Install MySQL Community Repository"
-     yum:
-       name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
-       state: present 
-   - name: "Install MySQL database"
-     yum:
-       name: "{{ item }}"
-       state: present
-     loop:
-        - "mysql-server"
-        - "mysql-devel"
-   - name: "Create MySQL configuration file"
-     copy:
-       content: |
-          [client]
-          user=root
-          password="@targ8et"
-       dest: "/etc/.my.cnf"
-   
-   - name: "Start MySQL DB Service"
-     service:
-       name: mysqld
-       state: started
-       enabled: yes
+   roles:
+   - python
+   - mysql_db 
 
-   - name: "Install MYSQL-Python Package"
-     yum:
-       name: "MySQL-python"
-       state: present
-   - name: "Install pip"
-     yum:
-       name: "python-pip"
-       state: present
-
-   - name: "Create Application Database"
-     community.mysql.mysql_db:
-       name: "{{ db_name }}"
-       state: present
-   - name: "Upgrade MySQL Database"
-     shell: mysql_upgrade --force
-   - name: "Create Application DB User"
-     mysql_user:
-       name: "{{ db_user }}"
-       password: "{{ db_user_password }}"
-       priv: '*.*:ALL'
-       state: present
-   - name: "Install Python Flask Dependencies"
-     ansible.builtin.pip:
-       name:
-       - "Flask"
-       - "Flask-MySQL"
-       executable: pip3
-   - name: "Check if Application Repo Exists"
-     stat:
-       path: /opt/simple-webapp
-     register: git_exists
-   - name: "Report Application Repo Exists"
-     debug:
-       msg: "Application Repo is already on system"
-     when: git_exists.stat.exists
-   - name: "Report if Application Does not Repo Exists"
-     debug:
-       msg: "Application Repo is not on system"
-     when: not git_exists.stat.exists
-   - name: "Clone Application Repo"
-     command: git clone https://github.com/mmumshad/simple-webapp.git /opt/simple-webapp
-     when: not git_exists.stat.exists
-   - name: "Run WebSever"
-     shell: FLASK_APP=/opt/simple-webapp/app.py nohup python3 -m flask run --host=0.0.0.0 &
+ - name: "Deploy Web Server"
+   hosts: ansible-target2
+   become: true
+   roles:
+   - python
+   - flask_web
