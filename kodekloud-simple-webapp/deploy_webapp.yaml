@@ -1,5 +1,5 @@
 # Ansible Playbook - Deploy monolithic Web Server (Debian)
- - name: "Deploy MySQL Database"
+ - name: "Deploy MySQL Database and App"
    hosts: ansible-target1
    become: true
    roles:

@@ -1,11 +1,11 @@
- - name: "Undeploy Monolithic Web Application"
+ - name: "Undeploy Database Server"
    hosts: ansible-target1
    become: true
    roles:
    - mysql_db_uninstall
    - python_uninstall
 
- - name: "Undeploy Monolithic Web Application"
+ - name: "Undeploy Web Application"
    hosts: ansible-target2
    become: true
    roles:

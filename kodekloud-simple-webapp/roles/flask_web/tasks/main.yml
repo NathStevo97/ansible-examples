@@ -8,26 +8,25 @@
     executable: pip3
 - name: "Check if Application Repo Exists"
   stat:
-    path: /opt/simple-webapp
-  register: git_exists
+    path: /opt/app.py
+  register: app_exists
 - name: "Report Application Repo Exists"
   debug:
-    msg: "Application Repo is already on system"
-  when: git_exists.stat.exists
+    msg: "Application is already on system"
+  when: app_exists.stat.exists
 - name: "Report if Application Does not Repo Exists"
   debug:
-    msg: "Application Repo is not on system"
-  when: not git_exists.stat.exists
-- name: "Clone Application Repo"
-  command: git clone https://github.com/mmumshad/simple-webapp.git /opt/simple-webapp
-  when: not git_exists.stat.exists
-- name: "SEt MYSQL_DATABASE_HOST Env Variable"
-  ansible.builtin.lineinfile:
-    dest: "/etc/environment"
-    state: present
-    line: "MYSQL_DATABASE_HOST={{ db_server_ip }}"
+    msg: "Application is not on system"
+  when: not app_exists.stat.exists
+- name: "Copy Application Repo"
+  ansible.builtin.copy:
+    src: app.py
+    dest: /opt/app.py
+  when: not app_exists.stat.exists
 - name: "Run WebSever"
-  shell: FLASK_APP=/opt/simple-webapp/app.py nohup python3 -m flask run --host=0.0.0.0 &
+  environment:
+    MYSQL_DATABASE_HOST: "{{ db_server_ip }}"
+  shell: FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 &
 - name: "Test httpd webhost"
   uri:
     url: http://localhost:5000

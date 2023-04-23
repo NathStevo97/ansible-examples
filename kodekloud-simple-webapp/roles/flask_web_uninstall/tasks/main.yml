@@ -9,7 +9,7 @@
      - "{{ _process.stdout_lines }}"
    - name: "Remove web-server code"
      ansible.builtin.file:
-       path: /opt/simple-webapp
+       path: /opt/app.py
        state: absent
    - name: "Uninstall Python Flask Dependencies"
      ansible.builtin.pip:

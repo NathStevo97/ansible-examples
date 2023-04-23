@@ -49,6 +49,6 @@
   mysql_user:
     name: "{{ db_user }}"
     password: "{{ db_user_password }}"
-    host: "{{ web_server_ip }}"
+    #host: "{{ web_server_ip }}"
     priv: '*.*:ALL'
     state: present
