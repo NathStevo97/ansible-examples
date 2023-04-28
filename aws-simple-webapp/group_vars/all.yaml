@@ -1,0 +1,10 @@
+
+instance_list:
+  - web-server-1, web-server-2
+  - db-server
+instance_type: t2.micro
+key_name: id_rsa
+region: eu-west-2
+ami_id: ami-0d93d81bb4899d4cf
+vpc_subnet_id: subnet-05953dfd572b19719
+security_group_id: sg-0ff53009a449e2f90

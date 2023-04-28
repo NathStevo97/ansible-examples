@@ -1,0 +1,21 @@
+- name: Create EC2 Instances
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Launch Instances
+    amazon.aws.ec2_instance:
+      name: "{{ item }}"
+      key_material: "{{ lookup('file', '/home/nstephenson/.ssh/{{ key_name }}.pub') }}"
+      vpc_subnet_id: "{{ vpc_subnet_id }}"
+      instance_type: "{{ instance_type  }}"
+      security_group: "{{ security_group_id }}"
+      image_id: "{{ ami_id }}"
+      region: "{{ region }}"
+      network:
+        assign_public_ip: true
+      tags:
+        Name: "{{ item }}"
+    with_items: "{{ instance_list }}"
+    register: result
+      
