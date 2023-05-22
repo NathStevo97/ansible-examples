@@ -1,0 +1,96 @@
+---
+# tasks file for aws_network
+  - name: Create the VPC
+    ec2_vpc_net:
+      #aws_access_key: "{{ AWS_ACCESS_KEY }}"
+      #aws_secret_key: "{{ AWS_SECRET_KEY }}"
+      region: "{{ aws_region }}"
+      profile: "{{ aws_profile }}"
+      state: present
+      name:  test_vpc_net
+      cidr_block: 10.10.0.0/16
+      tags:
+        module: ec2_vpc_net
+        name: "{{ resource_name_prefix }}-vpc"
+      tenancy: default
+    register: ansibleVPC
+
+  - name: debug VPC
+    debug:
+      var: ansibleVPC
+
+  - name: Create an Internet Gateway
+    ec2_vpc_igw:
+      #aws_access_key: "{{ aws_access_key }}"
+      #aws_secret_key: "{{ aws_secret_key }}"
+      region: "{{ aws_region }}"
+      profile: "{{ aws_profile }}"
+      state: present
+      vpc_id: "{{ ansibleVPC.vpc.id }}"
+      tags:
+        name: "{{ resource_name_prefix }}-igw"
+    register: ansibleVPC_igw
+
+  - name:
+    debug:
+      var: ansibleVPC_igw
+
+  - name: Create the Public Subnet
+    ec2_vpc_subnet:
+      #aws_access_key: "{{ aws_access_key }}"
+      #aws_secret_key: "{{ aws_secret_key }}"
+      profile: "{{ aws_profile }}"
+      region: "{{ aws_region }}"
+      state: present
+      cidr: 10.10.0.0/16
+      vpc_id: "{{ ansibleVPC.vpc.id }}"
+      map_public: yes
+      tags:
+        name: "{{ resource_name_prefix }}-public_subnet"
+    register: public_subnet
+
+  - name: show public subnet details
+    debug:
+      var: public_subnet
+
+  - name: create a new route table for pulbic subnet
+    ec2_vpc_route_table:
+      #aws_access_key: "{{ aws_access_key }}"
+      #aws_secret_key: "{{ aws_secret_key }}"
+      profile: "{{ aws_profile }}"
+      region: "{{ aws_region }}"
+      state: present
+      vpc_id: "{{ ansibleVPC.vpc.id }}"
+      tags:
+        name: "{{ resource_name_prefix }}-rt"
+      subnets:
+      - "{{ public_subnet.subnet.id }}"
+      routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ ansibleVPC_igw.gateway_id }}"
+    register: rt_ansibleVPC_PublicSubnet
+
+  - name: display public route table
+    debug:
+      var: rt_ansibleVPC_PublicSubnet
+
+  - name: Create Security Group
+    ec2_group:
+      #aws_access_key: "{{ aws_access_key }}"
+      #aws_secret_key: "{{ aws_secret_key }}"
+      profile: "{{ aws_profile }}"
+      region: "{{ aws_region }}"
+      name: "Test Security Group"
+      description: "Test Security Group"
+      vpc_id: "{{ ansibleVPC.vpc.id }}"
+      tags:
+        name: "{{ resource_name_prefix }}-sg"
+      rules:
+      - proto: "tcp"
+        ports: "22"
+        cidr_ip: 0.0.0.0/0
+    register: my_vpc_sg
+
+  - name: Set security group ID as variable
+    set_fact:
+      sg_id: "{{ my_vpc_sg.group_id }}"

@@ -1,0 +1,78 @@
+---
+# tasks file for aws_ec2
+  - name: Find AMIs published by Red Hat (309956199498) that are Non-beta and x86 architecture
+    ec2_ami_info:
+      #aws_access_key: "{{ aws_access_key }}"
+      #aws_secret_key: "{{ aws_secret_key }}"
+      profile: Nathan-Dev
+      region: "{{ aws_region }}"
+      owners: 309956199498
+      filters:
+        architecture: x86_64
+        name: RHEL-8*HVM-*
+    register: amis
+
+  - name: Show the AMIs
+    debug:
+      var: amis
+
+  - name: Get the latest AMI from the list provided
+    set_fact:
+      latest_ami: "{{ amis.images | sort(attribute='creation_date') | last }}"
+
+ #- name: Create SSH Key
+ #   ec2_key:
+ #     #aws_access_key: "{{ aws_access_key }}"
+ #     profile: Nathan-Dev
+ #     #aws_secret_key: "{{ aws_secret_key }}"
+ #     region: "{{ aws_region }}"
+ #     name: "{{ ssh_keyname }}"
+ #   register: ec2_key_result
+
+ # - name: Save private key
+ #   copy: 
+ #     content: "{{ ec2_key_result.key.private_key }}"
+ #     dest: "./demo_key.pem"
+ #     mode: 0600
+ #   when: ec2_key_result.changed
+
+#  - name: Provision the EC2 Instance
+#    ec2:
+      #aws_access_key: "{{ aws_access_key }}"
+      #aws_secret_key: "{{ aws_secret_key }}"
+#      profile: Nathan-Dev
+#      region: "{{ aws_region }}"
+#      image: "{{ latest_ami.image_id }}"
+#      instance_type: t2.micro
+#      key_name: "{{ ssh_keyname }}"
+#      count: 2
+#      state: present
+#      group_id: "{{ my_vpc_sg.group_id }}"
+#      wait: yes
+#      vpc_subnet_id: "{{ public_subnet.subnet.id }}"
+#      assign_public_ip: yes
+#      instance_tags:
+#        name: new_demo_template
+#    register: ec2info
+
+#  - name: print the results:
+#      var: ec2info
+#    debug:
+
+
+ # - name: Launch Instances
+ #   amazon.aws.ec2_instance:
+ #     name: "{{ item }}"
+ #     key_material: "{{ lookup('file', '/home/nstephenson/.ssh/{{ key_name }}.pub') }}"
+ #     vpc_subnet_id: "{{ vpc_subnet_id }}"
+ #     instance_type: "{{ instance_type  }}"
+ #     security_group: "{{ security_group_id }}"
+ #     image_id: "{{ ami_id }}"
+ #     region: "{{ region }}"
+ #     network:
+ #       assign_public_ip: true
+ #     tags:
+ #       Name: "{{ item }}"
+ #   with_items: "{{ instance_list }}"
+ #   register: result
+      

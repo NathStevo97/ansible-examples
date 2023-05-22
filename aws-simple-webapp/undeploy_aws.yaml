@@ -1,0 +1,6 @@
+# Ansible Playbook - Deploy AWS Infrastructure
+- name: Undeploy AWS Infrastructure for Distributed Application
+  hosts: localhost
+  gather_facts: no
+  roles:
+  - aws_network_uninstall

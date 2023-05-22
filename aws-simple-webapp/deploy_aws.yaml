@@ -1,0 +1,7 @@
+# Ansible Playbook - Deploy AWS Infrastructure
+- name: Deploy AWS Infrastructure for Distributed Application
+  hosts: localhost
+  gather_facts: no
+  roles:
+  - aws_network
+  - aws_ec2
