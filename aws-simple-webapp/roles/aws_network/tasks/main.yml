@@ -7,7 +7,7 @@
       region: "{{ aws_region }}"
       profile: "{{ aws_profile }}"
       state: present
-      name:  test_vpc_net
+      name:  "{{ resource_name_prefix }}-vpc"
       cidr_block: 10.10.0.0/16
       tags:
         module: ec2_vpc_net
@@ -25,6 +25,7 @@
       #aws_secret_key: "{{ aws_secret_key }}"
       region: "{{ aws_region }}"
       profile: "{{ aws_profile }}"
+      #name: "{{ resource_name_prefix }}-igw"
       state: present
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
@@ -41,6 +42,7 @@
       #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
+      #name: "{{ resource_name_prefix }}-public_subnet"
       state: present
       cidr: 10.10.0.0/16
       vpc_id: "{{ ansibleVPC.vpc.id }}"
@@ -60,6 +62,7 @@
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
       state: present
+      #name: "{{ resource_name_prefix }}-rt"
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-rt"
@@ -80,7 +83,7 @@
       #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
-      name: "Test Security Group"
+      name: "{{ resource_name_prefix }}-sg"
       description: "Test Security Group"
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
