@@ -1,2 +1,68 @@
 ---
 # tasks file for aws_ec2_uninstall
+- name: Get Info of the VPCs
+  amazon.aws.ec2_vpc_net_info:
+    profile: "{{ aws_profile }}"
+    filters:
+      "tag:Name": "{{ resource_name_prefix }}-vpc"
+  register: ansibleVPC
+
+- name: debug VPC
+  debug:
+    var: ansibleVPC
+
+- name: Get info of public subnet
+  amazon.aws.ec2_vpc_subnet_info:
+    filters:
+      vpc-id: "{{ ansibleVPC.vpcs[0].id }}"
+  register: public_subnet
+
+- name: debug VPC Subnet Info
+  debug:
+    var: public_subnet
+
+- name: Get Gateway Info
+  amazon.aws.ec2_vpc_igw_info:
+    region: "{{ aws_region }}"
+    filters:
+      attachment.vpc-id: "{{ ansibleVPC.vpcs[0].id }}"
+  register: ansibleVPC_igw
+
+- name: debug VPC IGW Info
+  debug:
+    var: ansibleVPC_igw
+
+- name: Get Info about EC2 Instances
+  amazon.aws.ec2_instance_info:
+    region: "{{ aws_region }}"
+    filters:
+      "tag:app": simple-webapp
+  register: ec2info
+
+- name: debug EC2 Info
+  debug:
+    var: ec2info
+
+- name: Terminate Instances
+  amazon.aws.ec2_instance:
+    profile: Nathan-Dev
+    key_name: "{{ ssh_keyname }}-simple-webapp"
+    vpc_subnet_id: "{{ public_subnet.subnets[0].id }}"
+    instance_type: "{{ instance_type }}"
+    security_group: "{{ ec2info.instances[1].security_groups[0].group_id }}"
+    image_id: "{{ ec2info.instances[0].image_id }}"
+    region: "{{ aws_region }}"
+    state: absent
+    network:
+      assign_public_ip: true
+    tags:
+      Name: "{{ item }}"
+      app: simple-webapp
+  with_items: "{{ instance_list }}"
+
+- name: Delete SSH Key
+  ec2_key:
+    profile: Nathan-Dev
+    region: "{{ aws_region }}"
+    name: "{{ ssh_keyname }}-simple-webapp"
+    state: absent

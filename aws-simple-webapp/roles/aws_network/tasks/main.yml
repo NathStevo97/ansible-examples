@@ -12,6 +12,7 @@
       tags:
         module: ec2_vpc_net
         name: "{{ resource_name_prefix }}-vpc"
+        app: simple-webapp
       tenancy: default
     register: ansibleVPC
 
@@ -30,9 +31,10 @@
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-igw"
+        app: simple-webapp
     register: ansibleVPC_igw
 
-  - name:
+  - name: Display IGW Results
     debug:
       var: ansibleVPC_igw
 
@@ -49,6 +51,7 @@
       map_public: yes
       tags:
         name: "{{ resource_name_prefix }}-public_subnet"
+        app: simple-webapp
     register: public_subnet
 
   - name: show public subnet details
@@ -66,6 +69,7 @@
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-rt"
+        app: simple-webapp
       subnets:
       - "{{ public_subnet.subnet.id }}"
       routes:
@@ -88,6 +92,7 @@
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-sg"
+        app: simple-webapp
       rules:
       - proto: "tcp"
         ports: "22"
