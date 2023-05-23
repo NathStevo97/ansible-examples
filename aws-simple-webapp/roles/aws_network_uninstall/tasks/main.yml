@@ -2,14 +2,12 @@
 # tasks file for aws_network_uninstall
   - name: Remove Security Group
     ec2_group:
-      #aws_access_key: "{{ aws_access_key }}"
-      #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
       name: "{{ resource_name_prefix }}-sg"
       description: "Test Security Group"
       state: absent
-      vpc_id: "{{ ansibleVPC.vpcs[0].id }}"
+      vpc_id: "{{ ansibleVPC_info.vpcs[0].id }}"
       tags:
         name: "{{ resource_name_prefix }}-sg"
       rules:
@@ -19,36 +17,31 @@
 
   - name: Remove Public Subnet Route Table
     ec2_vpc_route_table:
-      #aws_access_key: "{{ aws_access_key }}"
-      #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
       #name: "{{ resource_name_prefix }}-rt"
       state: absent
-      vpc_id: "{{ ansibleVPC.vpcs[0].id }}"
+      vpc_id: "{{ ansibleVPC_info.vpcs[0].id }}"
       tags:
         name: "{{ resource_name_prefix }}-rt"
       subnets:
-      - "{{ public_subnet.subnets[0].id }}"
+      - "{{ public_subnet_info.subnets[0].id }}"
       routes:
       - dest: 0.0.0.0/0
-        gateway_id: "{{ ansibleVPC_igw.internet_gateways[0].internet_gateway_id }}"
-    register: rt_ansibleVPC_PublicSubnet
+        gateway_id: "{{ ansibleVPC_igw_info.internet_gateways[0].internet_gateway_id }}"
+    register: rt_ansibleVPC_info_PublicSubnet_info
 
   - name: display public route table
     debug:
-      var: rt_ansibleVPC_PublicSubnet
+      var: rt_ansibleVPC_PublicSubnet_info
 
   - name: Remove the Public Subnet
     ec2_vpc_subnet:
-      #aws_access_key: "{{ aws_access_key }}"
-      #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
-      #name: "{{ resource_name_prefix }}-public_subnet"
       state: absent
       cidr: 10.10.0.0/16
-      vpc_id: "{{ ansibleVPC.vpcs[0].id }}"
+      vpc_id: "{{ ansibleVPC_info.vpcs[0].id }}"
       map_public: yes
       tags:
         name: "{{ resource_name_prefix }}-public_subnet"
@@ -56,21 +49,16 @@
 
   - name: Remove the Internet Gateway
     ec2_vpc_igw:
-      #aws_access_key: "{{ aws_access_key }}"
-      #aws_secret_key: "{{ aws_secret_key }}"
       region: "{{ aws_region }}"
       profile: "{{ aws_profile }}"
-      #name: "{{ resource_name_prefix }}-igw"
       state: absent
-      vpc_id: "{{ ansibleVPC.vpcs[0].id }}"
+      vpc_id: "{{ ansibleVPC_info.vpcs[0].id }}"
       tags:
         name: "{{ resource_name_prefix }}-igw"
-    register: ansibleVPC_igw
+    register: ansibleVPC_info_igw
 
   - name: Remove the VPC
     ec2_vpc_net:
-      #aws_access_key: "{{ AWS_ACCESS_KEY }}"
-      #aws_secret_key: "{{ AWS_SECRET_KEY }}"
       region: "{{ aws_region }}"
       profile: "{{ aws_profile }}"
       name:  "{{ resource_name_prefix }}-vpc"
@@ -80,4 +68,4 @@
         module: ec2_vpc_net
         name: "{{ resource_name_prefix }}-vpc"
       tenancy: default
-    register: ansibleVPC
+    register: ansibleVPC_info

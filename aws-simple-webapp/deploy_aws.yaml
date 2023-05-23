@@ -5,3 +5,21 @@
   roles:
   - aws_network
   - aws_ec2
+
+- name: Setup Database
+  hosts: db_servers
+  connection: ssh
+  roles:
+  - python
+  - mysql_db 
+
+
+#- name: Setup Web Server
+#  hosts: web_servers
+#  become: yes
+#  become_user: ec2-user
+#  become_method: sudo
+#  connection: ssh
+#  roles:
+#  - python
+#  - flask_web

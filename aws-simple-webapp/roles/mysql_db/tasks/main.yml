@@ -1,0 +1,54 @@
+---
+# tasks file for mysql_db
+- name: "Install MySQL Community Repository"
+  yum:
+    name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
+    state: present 
+
+- name: "Install MySQL database"
+  yum:
+     name: "{{ item }}"
+     state: present
+  loop:
+  - "mysql-server"
+  - "mysql-devel"
+   
+- name: "Create MySQL configuration file"
+  copy:
+    content: |
+      [client]
+      user=root
+      password="@targ8et"
+    dest: "/etc/.my.cnf"
+   
+- name: "Start MySQL DB Service"
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: "Install MYSQL-Python Package"
+  yum:
+    name: "MySQL-python"
+    state: present
+
+- name: "Install pip"
+  yum:
+    name: "python-pip"
+    state: present
+
+- name: "Create Application Database"
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: present
+
+- name: "Upgrade MySQL Database"
+  shell: mysql_upgrade --force
+
+- name: "Create Application DB User"
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_user_password }}"
+    #host: "{{ web_server_ip }}"
+    priv: '*.*:ALL'
+    state: present

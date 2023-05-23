@@ -1,0 +1,35 @@
+---
+# tasks file for flask_web
+- name: "Install Python Flask Dependencies"
+  ansible.builtin.pip:
+    name:
+    - "Flask"
+    - "Flask-MySQL"
+    executable: pip3
+- name: "Check if Application Repo Exists"
+  stat:
+    path: /opt/app.py
+  register: app_exists
+- name: "Report Application Repo Exists"
+  debug:
+    msg: "Application is already on system"
+  when: app_exists.stat.exists
+- name: "Report if Application Does not Repo Exists"
+  debug:
+    msg: "Application is not on system"
+  when: not app_exists.stat.exists
+- name: "Copy Application Repo"
+  ansible.builtin.copy:
+    src: app.py
+    dest: /opt/app.py
+  when: not app_exists.stat.exists
+- name: Print command
+  debug: msg="MYSQL_DATABASE_HOST={{ hostvars[groups['db_servers'][0]]['private_ip'] }} FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 --port=80&"
+- name: "Run WebSever"
+  environment:
+    MYSQL_DATABASE_HOST: "{{ hostvars[groups['db_servers'][0]]['private_ip'] }}"
+  shell: MYSQL_DATABASE_HOST={{ hostvars[groups['db_servers'][0]]['private_ip'] }} FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 --port=80 &
+- name: "Test httpd webhost"
+  uri:
+    url: http://localhost:80
+    return_content: yes

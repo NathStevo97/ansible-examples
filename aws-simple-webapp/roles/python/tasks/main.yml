@@ -1,0 +1,15 @@
+---
+# tasks file for python
+- name: "Upgrade Packages"
+  yum:
+    name: '*'
+    state: latest
+- name: "Install Dependencies"
+  yum:
+    name: '{{item}}'
+    state: present
+  loop:
+  - "epel-release"
+  - "python3"
+  - "python-devel"
+  - "git"
