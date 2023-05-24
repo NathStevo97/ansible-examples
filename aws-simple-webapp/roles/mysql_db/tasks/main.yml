@@ -1,8 +1,18 @@
 ---
 # tasks file for mysql_db
+- name: Import MySQL Community Repo GPG Key
+  rpm_key:
+    state: present
+    key: http://repo.mysql.com/RPM-GPG-KEY-mysql
+
+- name: Import MySQL Community Plugins Repo GPG Key
+  rpm_key:
+    state: present
+    key: http://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+
 - name: "Install MySQL Community Repository"
   yum:
-    name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
+    name: "https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm"
     state: present 
 
 - name: "Install MySQL database"
@@ -12,6 +22,9 @@
   loop:
   - "mysql-server"
   - "mysql-devel"
+  #- "mysql-client"
+  - "mysql-community-client-plugins"
+  - "mysql-connector-python"
    
 - name: "Create MySQL configuration file"
   copy:
@@ -27,15 +40,19 @@
     state: started
     enabled: yes
 
-- name: "Install MYSQL-Python Package"
+- name: "Install pip3"
   yum:
-    name: "MySQL-python"
+    name: "python3-pip"
     state: present
 
-- name: "Install pip"
-  yum:
-    name: "python-pip"
+- name: "Install MYSQL-Python Package"
+  ansible.builtin.pip:
+    #name: python3-mysqldb
+    #name: "MySQL-python"
+    name: PyMySQL
+    #name: mysqlclient
     state: present
+    executable: pip3
 
 - name: "Create Application Database"
   community.mysql.mysql_db:

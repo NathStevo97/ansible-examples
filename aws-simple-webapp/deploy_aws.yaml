@@ -14,12 +14,9 @@
   - mysql_db 
 
 
-#- name: Setup Web Server
-#  hosts: web_servers
-#  become: yes
-#  become_user: ec2-user
-#  become_method: sudo
-#  connection: ssh
-#  roles:
-#  - python
-#  - flask_web
+- name: Setup Web Server
+  hosts: web_servers
+  connection: ssh
+  roles:
+  - python
+  - flask_web

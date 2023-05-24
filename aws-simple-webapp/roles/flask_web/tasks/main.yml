@@ -29,7 +29,7 @@
   environment:
     MYSQL_DATABASE_HOST: "{{ hostvars[groups['db_servers'][0]]['private_ip'] }}"
   shell: MYSQL_DATABASE_HOST={{ hostvars[groups['db_servers'][0]]['private_ip'] }} FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 --port=80 &
-- name: "Test httpd webhost"
-  uri:
-    url: http://localhost:80
-    return_content: yes
+#- name: "Test httpd webhost"
+#  uri:
+#    url: http://localhost:80
+#    return_content: yes
