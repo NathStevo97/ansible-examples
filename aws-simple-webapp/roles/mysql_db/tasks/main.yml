@@ -66,6 +66,6 @@
   mysql_user:
     name: "{{ db_user }}"
     password: "{{ db_user_password }}"
-    #host: "{{ web_server_ip }}"
+    host: "{{ hostvars[groups['web_servers'][0]]['private_ip'] }}"
     priv: '*.*:ALL'
     state: present

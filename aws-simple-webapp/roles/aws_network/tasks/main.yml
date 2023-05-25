@@ -97,6 +97,12 @@
       - proto: "tcp"
         ports: "22"
         cidr_ip: 0.0.0.0/0
+      - proto: "tcp"
+        ports: "80"
+        cidr_ip: 0.0.0.0/0
+      - proto: "tcp"
+        ports: "3306"
+        cidr_ip: 0.0.0.0/0
     register: my_vpc_sg
 
   - name: Set security group ID as variable

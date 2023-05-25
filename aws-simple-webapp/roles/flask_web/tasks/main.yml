@@ -24,7 +24,7 @@
     dest: /opt/app.py
   when: not app_exists.stat.exists
 - name: Print command
-  debug: msg="MYSQL_DATABASE_HOST={{ hostvars[groups['db_servers'][0]]['private_ip'] }} FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 --port=80&"
+  debug: msg="MYSQL_DATABASE_HOST={{ hostvars[groups['db_servers'][0]]['private_ip'] }} FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 --port=80 &"
 - name: "Run WebSever"
   environment:
     MYSQL_DATABASE_HOST: "{{ hostvars[groups['db_servers'][0]]['private_ip'] }}"

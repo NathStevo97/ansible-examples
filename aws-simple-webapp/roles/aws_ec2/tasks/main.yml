@@ -22,7 +22,7 @@
   ec2_key:
     profile: Nathan-Dev
     region: "{{ aws_region }}"
-    name: "{{ ssh_keyname }}-simple-webapp"
+    name: "simple-webapp-key"
   register: ec2_key_result
 
 - name: Save private key
@@ -36,7 +36,7 @@
   amazon.aws.ec2_instance:
     profile: Nathan-Dev
     name: "{{ item }}"
-    key_name: "{{ ssh_keyname }}-simple-webapp"
+    key_name: "simple-webapp-key"
     vpc_subnet_id: "{{ public_subnet.subnet.id }}"
     instance_type: "{{ instance_type }}"
     security_group: "{{ my_vpc_sg.group_id }}"

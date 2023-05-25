@@ -3,7 +3,6 @@ instance_list:
   - web-server-1
   - db-server
 instance_type: t3.micro
-ssh_keyname: id_rsa
 aws_region: eu-west-2
 aws_profile: Nathan-Dev
 resource_name_prefix: simple-webapp
