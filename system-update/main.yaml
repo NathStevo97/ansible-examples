@@ -1,0 +1,22 @@
+# Ansible Playbook - Update System Packages
+- name: Update system packages in WSL
+  hosts: localhost
+  become: true
+  gather_facts: no
+  tasks:
+  - name: "Upgrade Packages"
+    apt:
+      name: '*'
+      state: latest
+
+- name: Update Powershell packages
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  - shell: |
+      choco upgrade -y all
+    args:
+      executable: powershell.exe
+    register: psversion
+  - debug:
+      var: psversion.stdout
