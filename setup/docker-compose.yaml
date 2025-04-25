@@ -1,0 +1,46 @@
+services:
+  target1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible-target1
+    hostname: target1
+    privileged: true
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    ports:
+      - "2221:22"
+    networks:
+      ansible_network:
+        ipv4_address: 172.21.0.2
+    cap_add:
+      - SYS_ADMIN
+    restart: always
+
+  target2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible-target2
+    hostname: target2
+    privileged: true
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    ports:
+      - "2222:22"
+    networks:
+      ansible_network:
+        ipv4_address: 172.21.0.3
+    cap_add:
+      - SYS_ADMIN
+    restart: always
+
+networks:
+  ansible_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
