@@ -7,11 +7,12 @@
       region: "{{ aws_region }}"
       profile: "{{ aws_profile }}"
       state: present
-      name:  test_vpc_net
+      name:  "{{ resource_name_prefix }}-vpc"
       cidr_block: 10.10.0.0/16
       tags:
         module: ec2_vpc_net
         name: "{{ resource_name_prefix }}-vpc"
+        app: simple-webapp
       tenancy: default
     register: ansibleVPC
 
@@ -25,13 +26,15 @@
       #aws_secret_key: "{{ aws_secret_key }}"
       region: "{{ aws_region }}"
       profile: "{{ aws_profile }}"
+      #name: "{{ resource_name_prefix }}-igw"
       state: present
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-igw"
+        app: simple-webapp
     register: ansibleVPC_igw
 
-  - name:
+  - name: Display IGW Results
     debug:
       var: ansibleVPC_igw
 
@@ -41,12 +44,14 @@
       #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
+      #name: "{{ resource_name_prefix }}-public_subnet"
       state: present
       cidr: 10.10.0.0/16
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       map_public: yes
       tags:
         name: "{{ resource_name_prefix }}-public_subnet"
+        app: simple-webapp
     register: public_subnet
 
   - name: show public subnet details
@@ -60,9 +65,11 @@
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
       state: present
+      #name: "{{ resource_name_prefix }}-rt"
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-rt"
+        app: simple-webapp
       subnets:
       - "{{ public_subnet.subnet.id }}"
       routes:
@@ -80,14 +87,21 @@
       #aws_secret_key: "{{ aws_secret_key }}"
       profile: "{{ aws_profile }}"
       region: "{{ aws_region }}"
-      name: "Test Security Group"
+      name: "{{ resource_name_prefix }}-sg"
       description: "Test Security Group"
       vpc_id: "{{ ansibleVPC.vpc.id }}"
       tags:
         name: "{{ resource_name_prefix }}-sg"
+        app: simple-webapp
       rules:
       - proto: "tcp"
         ports: "22"
+        cidr_ip: 0.0.0.0/0
+      - proto: "tcp"
+        ports: "80"
+        cidr_ip: 0.0.0.0/0
+      - proto: "tcp"
+        ports: "3306"
         cidr_ip: 0.0.0.0/0
     register: my_vpc_sg
 

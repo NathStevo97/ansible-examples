@@ -3,4 +3,5 @@
   hosts: localhost
   gather_facts: no
   roles:
+  - aws_ec2_uninstall
   - aws_network_uninstall

@@ -1,0 +1,27 @@
+---
+# tasks file for python
+- name: "Upgrade Packages"
+  yum:
+    name: '*'
+    state: latest
+
+
+- name: Import EPEL GPG key.
+  rpm_key:
+    key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
+    state: present
+
+- name: Install EPEL repo.
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    state: present
+
+- name: "Install Dependencies"
+  yum:
+    name: '{{item}}'
+    state: present
+  loop:
+  - "epel-release"
+  - "python3"
+  - "python3-devel"
+  - "git"

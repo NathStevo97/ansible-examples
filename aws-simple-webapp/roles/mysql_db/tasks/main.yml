@@ -1,0 +1,71 @@
+---
+# tasks file for mysql_db
+- name: Import MySQL Community Repo GPG Key
+  rpm_key:
+    state: present
+    key: http://repo.mysql.com/RPM-GPG-KEY-mysql
+
+- name: Import MySQL Community Plugins Repo GPG Key
+  rpm_key:
+    state: present
+    key: http://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+
+- name: "Install MySQL Community Repository"
+  yum:
+    name: "https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm"
+    state: present 
+
+- name: "Install MySQL database"
+  yum:
+     name: "{{ item }}"
+     state: present
+  loop:
+  - "mysql-server"
+  - "mysql-devel"
+  #- "mysql-client"
+  - "mysql-community-client-plugins"
+  - "mysql-connector-python"
+   
+- name: "Create MySQL configuration file"
+  copy:
+    content: |
+      [client]
+      user=root
+      password="@targ8et"
+    dest: "/etc/.my.cnf"
+   
+- name: "Start MySQL DB Service"
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: "Install pip3"
+  yum:
+    name: "python3-pip"
+    state: present
+
+- name: "Install MYSQL-Python Package"
+  ansible.builtin.pip:
+    #name: python3-mysqldb
+    #name: "MySQL-python"
+    name: PyMySQL
+    #name: mysqlclient
+    state: present
+    executable: pip3
+
+- name: "Create Application Database"
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: present
+
+- name: "Upgrade MySQL Database"
+  shell: mysql_upgrade --force
+
+- name: "Create Application DB User"
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_user_password }}"
+    host: "{{ hostvars[groups['web_servers'][0]]['private_ip'] }}"
+    priv: '*.*:ALL'
+    state: present
