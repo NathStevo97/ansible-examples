@@ -4,3 +4,4 @@ kodekloud-ecommerce-project/vars/server_ips.yaml
 **/host_vars/**
 *.ini
 .vscode/*
+ssh/*
