@@ -8,50 +8,6 @@
     apt_cache_valid_time: 3600
     run_dist_upgrade: false
 
-  tasks:
-    - name: Update apt package cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: "{{ apt_cache_valid_time }}"
-
-    - name: Upgrade installed apt packages
-      ansible.builtin.apt:
-        upgrade: safe
-
-    - name: Optionally perform dist-upgrade
-      ansible.builtin.apt:
-        upgrade: dist
-      when: run_dist_upgrade | bool
-
-    - name: Remove unnecessary packages
-      ansible.builtin.apt:
-        autoremove: true
-        autoclean: true
-
-    - name: Get Pi-hole versions
-      ansible.builtin.command:
-        cmd: pihole -v
-      register: pihole_version
-      changed_when: false
-
-    - name: Determine whether Pi-hole upgrade is needed
-      ansible.builtin.set_fact:
-        pihole_update_needed: >-
-          {{
-            'update available' in (pihole_version.stdout | lower)
-            or 'updates are available' in (pihole_version.stdout | lower)
-          }}
-
-    - name: Upgrade Pi-hole
-      ansible.builtin.command:
-        cmd: pihole -up
-      register: pihole_upgrade
-      when: pihole_update_needed
-      changed_when: true
-
-    - name: Show Pi-hole upgrade output
-      ansible.builtin.debug:
-        var: pihole_upgrade.stdout_lines
-      when:
-        - pihole_upgrade is defined
-        - pihole_upgrade.stdout_lines is defined
+  roles:
+    - apt-update
+    - pihole-update
