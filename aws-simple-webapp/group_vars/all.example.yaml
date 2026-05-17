@@ -1,0 +1,10 @@
+instance_list:
+  - <WEB SERVER HOSTNAME>
+  - <DB SERVER HOSTNAME>
+instance_type: <AWS INSTANCE TYPE>
+aws_region: <AWS REGION>
+aws_profile: <AWS PROFILE NAME>
+resource_name_prefix: <RESOURCE NAME PREFIX>
+db_name: <DATABASE NAME>
+db_user: <DATABASE USERNAME>
+db_user_password: <DATABASE USER PASSWORD>

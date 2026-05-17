@@ -4,3 +4,21 @@ kodekloud-ecommerce-project/vars/server_ips.yaml
 **/host_vars/**
 *.pem
 ./**/.pem
+
+# Ansible noise
+*.retry
+ansible.log
+
+# Inventories (local only)
+**/inventory.ini
+
+# SSH keys (never commit)
+ssh/
+*.pem
+*.key
+*.pub
+
+# Editors
+.vscode/
+.idea/
+.DS_Store
