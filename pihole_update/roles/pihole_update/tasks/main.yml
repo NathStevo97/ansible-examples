@@ -1,31 +1,31 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # tasks file for pihole-update
 
 - name: Get Pi-hole versions
   ansible.builtin.command:
     cmd: pihole -v
-  register: pihole_version
+  register: pihole_update_pihole_version
   changed_when: false
 
 - name: Determine whether Pi-hole upgrade is needed
   ansible.builtin.set_fact:
     pihole_update_needed: >-
       {{
-        'update available' in (pihole_version.stdout | lower)
-        or 'updates are available' in (pihole_version.stdout | lower)
+        'update available' in (pihole_update_pihole_version.stdout | lower)
+        or 'updates are available' in (pihole_update_pihole_version.stdout | lower)
       }}
 
 - name: Upgrade Pi-hole
   ansible.builtin.command:
     cmd: pihole -up
-  register: pihole_upgrade
+  register: pihole_update_pihole_upgrade
   when: pihole_update_needed
   changed_when: true
 
 - name: Show Pi-hole upgrade output
   ansible.builtin.debug:
-    var: pihole_upgrade.stdout_lines
+    var: pihole_update_pihole_upgrade.stdout_lines
   when:
-    - pihole_upgrade is defined
-    - pihole_upgrade.stdout_lines is defined
+    - pihole_update_pihole_upgrade is defined
+    - pihole_update_pihole_upgrade.stdout_lines is defined
