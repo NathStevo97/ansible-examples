@@ -9,5 +9,5 @@
     run_dist_upgrade: false
 
   roles:
-    - apt-update
-    - pihole-update
+    - system_update
+    - pihole_update

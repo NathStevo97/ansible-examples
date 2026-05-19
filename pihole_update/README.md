@@ -11,5 +11,5 @@ cp inventory.example.ini inventory.ini
 Execute playbook:
 
 ```shell
-ansible-playbook -i inventory.ini pihole-update.yaml
+ANSIBLE_CONFIG=../ansible.cfg ansible-playbook -i inventory.ini pihole-update.yaml
 ```
