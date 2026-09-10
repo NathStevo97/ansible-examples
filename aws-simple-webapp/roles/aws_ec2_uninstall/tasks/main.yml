@@ -10,7 +10,7 @@
   register: ec2info
 
 - name: debug EC2 Info
-  debug:
+  ansible.builtin.debug:
     var: ec2info
 
 - name: Get Security Group Info
@@ -22,7 +22,7 @@
   register: ec2_sg_info
 
 - name: debug EC2 SG Info
-  debug:
+  ansible.builtin.debug:
     var: ec2_sg_info
 
 - name: Get VPC Route Table Info
@@ -34,7 +34,7 @@
   register: rt_ansibleVPC_PublicSubnet_info
 
 - name: display public route table
-  debug:
+  ansible.builtin.debug:
     var: rt_ansibleVPC_PublicSubnet_info
 
 - name: Get info of public subnet
@@ -46,7 +46,7 @@
   register: public_subnet_info
 
 - name: debug VPC Subnet Info
-  debug:
+  ansible.builtin.debug:
     var: public_subnet_info
 
 - name: Get Gateway Info
@@ -58,7 +58,7 @@
   register: ansibleVPC_igw_info
 
 - name: debug VPC IGW Info
-  debug:
+  ansible.builtin.debug:
     var: ansibleVPC_igw_info
 
 - name: Get Info of the VPCs
@@ -69,7 +69,7 @@
   register: ansibleVPC_info
 
 - name: debug VPC
-  debug:
+  ansible.builtin.debug:
     var: ansibleVPC_info
 
 - name: Terminate Instances

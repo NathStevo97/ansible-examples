@@ -1,12 +1,12 @@
 ---
 # tasks file for mysql_db
 - name: "Install MySQL Community Repository"
-  yum:
+  ansible.builtin.yum:
     name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
     state: present
 
 - name: "Install MySQL database"
-  yum:
+  ansible.builtin.yum:
      name: "{{ item }}"
      state: present
   loop:
@@ -22,18 +22,18 @@
     dest: "/etc/.my.cnf"
 
 - name: "Start MySQL DB Service"
-  service:
+  ansible.builtin.service:
     name: mysqld
     state: started
     enabled: yes
 
 - name: "Install MYSQL-Python Package"
-  yum:
+  ansible.builtin.yum:
     name: "MySQL-python"
     state: present
 
 - name: "Install pip"
-  yum:
+  ansible.builtin.yum:
     name: "python-pip"
     state: present
 

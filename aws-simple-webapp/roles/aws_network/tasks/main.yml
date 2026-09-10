@@ -17,7 +17,7 @@
     register: ansibleVPC
 
   - name: debug VPC
-    debug:
+    ansible.builtin.debug:
       var: ansibleVPC
 
   - name: Create an Internet Gateway
@@ -35,7 +35,7 @@
     register: ansibleVPC_igw
 
   - name: Display IGW Results
-    debug:
+    ansible.builtin.debug:
       var: ansibleVPC_igw
 
   - name: Create the Public Subnet
@@ -55,7 +55,7 @@
     register: public_subnet
 
   - name: show public subnet details
-    debug:
+    ansible.builtin.debug:
       var: public_subnet
 
   - name: create a new route table for pulbic subnet
@@ -78,7 +78,7 @@
     register: rt_ansibleVPC_PublicSubnet
 
   - name: display public route table
-    debug:
+    ansible.builtin.debug:
       var: rt_ansibleVPC_PublicSubnet
 
   - name: Create Security Group

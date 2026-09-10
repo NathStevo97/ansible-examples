@@ -32,7 +32,7 @@
     register: rt_ansibleVPC_info_PublicSubnet_info
 
   - name: display public route table
-    debug:
+    ansible.builtin.debug:
       var: rt_ansibleVPC_PublicSubnet_info
 
   - name: Remove the Public Subnet

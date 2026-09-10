@@ -13,16 +13,16 @@
       name: '{{ db_name }}'
       state: absent
   - name: 'uninstalling python-3 mysql libraries'
-    yum:
+    ansible.builtin.yum:
       name: MySQL-python
       state: absent
   - name: "Uninstall MariaDB"
-    yum:
+    ansible.builtin.yum:
       name: mariadb-server
       state: absent
     become: true
   - name: "Uninstall Firewalld"
-    yum:
+    ansible.builtin.yum:
       name: firewalld
       state: present
     become: true
@@ -36,18 +36,18 @@
   become: true
   tasks:
   - name: "Check if GitHub Repo is on system"
-    stat:
+    ansible.builtin.stat:
       path: /var/www/html/README.md
     register: git_exists
   - name: "Delete  Application Repo"
     command: rm -r /var/www/html/
     when: git_exists.stat.exists == True
   - name: "Uninstall git to clone source code down"
-    yum:
+    ansible.builtin.yum:
       name: git
       state: absent
   - name: "Uninstall Required Packages for Apache Web Server"
-    yum:
+    ansible.builtin.yum:
       name: '{{ item }}'
       state: absent
     become: true
@@ -56,7 +56,7 @@
     - php
     - php-mysql
   - name: "Uninstall Firewalld"
-    yum:
+    ansible.builtin.yum:
       name: firewalld
       state: absent
     become: true

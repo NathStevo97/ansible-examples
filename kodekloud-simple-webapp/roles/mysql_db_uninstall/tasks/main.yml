@@ -5,17 +5,17 @@
        name: "{{ db_name }}"
        state: absent
    - name: "Uninstall pip"
-     yum:
+     ansible.builtin.yum:
        name: "python-pip"
        state: absent
    - name: "Uninstall MySQL database"
-     yum:
+     ansible.builtin.yum:
        name: "{{ item }}"
        state: absent
      loop:
         - "mysql-server"
         - "mysql-devel"
    - name: "Uninstall MySQL Community Repository"
-     yum:
+     ansible.builtin.yum:
        name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
        state: absent

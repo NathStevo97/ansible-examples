@@ -1,22 +1,22 @@
 ---
 # tasks file for mysql_db
 - name: Import MySQL Community Repo GPG Key
-  rpm_key:
+  ansible.builtin.rpm_key:
     state: present
     key: http://repo.mysql.com/RPM-GPG-KEY-mysql
 
 - name: Import MySQL Community Plugins Repo GPG Key
-  rpm_key:
+  ansible.builtin.rpm_key:
     state: present
     key: http://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
 - name: "Install MySQL Community Repository"
-  yum:
+  ansible.builtin.yum:
     name: "https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm"
     state: present
 
 - name: "Install MySQL database"
-  yum:
+  ansible.builtin.yum:
      name: "{{ item }}"
      state: present
   loop:
@@ -35,13 +35,13 @@
     dest: "/etc/.my.cnf"
 
 - name: "Start MySQL DB Service"
-  service:
+  ansible.builtin.service:
     name: mysqld
     state: started
     enabled: yes
 
 - name: "Install pip3"
-  yum:
+  ansible.builtin.yum:
     name: "python3-pip"
     state: present
 

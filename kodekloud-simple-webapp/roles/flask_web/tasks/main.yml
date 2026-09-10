@@ -7,15 +7,15 @@
     - "Flask-MySQL"
     executable: pip3
 - name: "Check if Application Repo Exists"
-  stat:
+  ansible.builtin.stat:
     path: /opt/app.py
   register: app_exists
 - name: "Report Application Repo Exists"
-  debug:
+  ansible.builtin.debug:
     msg: "Application is already on system"
   when: app_exists.stat.exists
 - name: "Report if Application Does not Repo Exists"
-  debug:
+  ansible.builtin.debug:
     msg: "Application is not on system"
   when: not app_exists.stat.exists
 - name: "Copy Application Repo"
@@ -28,6 +28,6 @@
     MYSQL_DATABASE_HOST: "{{ db_server_ip }}"
   ansible.builtin.shell: FLASK_APP=/opt/app.py nohup python3 -m flask run --host=0.0.0.0 &
 - name: "Test httpd webhost"
-  uri:
+  ansible.builtin.uri:
     url: http://localhost:5000
     return_content: yes

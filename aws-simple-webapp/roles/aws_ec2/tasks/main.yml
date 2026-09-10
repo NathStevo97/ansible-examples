@@ -11,7 +11,7 @@
   register: amis
 
 - name: Show the AMIs
-  debug:
+  ansible.builtin.debug:
     var: amis
 
 - name: Get the latest AMI from the list provided
@@ -53,7 +53,7 @@
   register: ec2
 
 - name: print the results
-  debug:
+  ansible.builtin.debug:
     var: ec2
 
 - name: wait for ssh connection to be available

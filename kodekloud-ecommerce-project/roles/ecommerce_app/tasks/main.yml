@@ -1,7 +1,7 @@
 ---
 # tasks file for ecommerce_app
   - name: "Install Required Packages for Apache Web Server"
-    yum:
+    ansible.builtin.yum:
       name: '{{ item }}'
       state: present
     become: true
@@ -26,17 +26,17 @@
     ansible.builtin.shell: sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
     become: true
   - name: "start and enable httpd service"
-    service:
+    ansible.builtin.service:
       name: httpd
       state: started
       enabled: yes
     become: true
   - name: "Install git to clone source code down"
-    yum:
+    ansible.builtin.yum:
       name: git
       state: present
   - name: "Check if GitHub Repo is on system"
-    stat:
+    ansible.builtin.stat:
       path: /var/www/html/README.md
     register: git_exists
   - name: "Clone Application Repo"
@@ -46,7 +46,7 @@
     ansible.builtin.shell: sed -i 's/172.20.1.101/{{db_server_ip}}/g' /var/www/html/index.php
     become: true
   - name: "Test httpd webhost"
-    uri:
+    ansible.builtin.uri:
       url: http://localhost
       return_content: yes
   - name: Set httpd_can_network_connect flag on and keep it persistent across reboots

@@ -1,7 +1,7 @@
 ---
 # tasks file for python_uninstall
    - name: "Uninstall Dependencies"
-     yum:
+     ansible.builtin.yum:
        name: '{{ item }}'
        state: absent
      loop:

@@ -1,7 +1,7 @@
 ---
 # tasks file for mariadb
   - name: "MariaDB Prerequisite - Install WGET"
-    yum:
+    ansible.builtin.yum:
       name: wget
       state: latest
   - name: "MariaDB Prerequisite: Download Repo Setup"
@@ -12,16 +12,16 @@
     command: 'bash -c ./mariadb_repo_setup'
     register: command_result
   - name: "Install MariaDB"
-    yum:
+    ansible.builtin.yum:
       name: mariadb-server
       state: latest
     become: true
   - name: 'installing python-3 mysql libraries'
-    yum:
+    ansible.builtin.yum:
       name: MySQL-python
       state: present
   - name:  "Start and Enable MariaDB Service"
-    service:
+    ansible.builtin.service:
       name: mariadb
       state: started
       enabled: yes

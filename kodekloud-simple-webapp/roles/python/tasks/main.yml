@@ -1,11 +1,11 @@
 ---
 # tasks file for python
 - name: "Upgrade Packages"
-  yum:
+  ansible.builtin.yum:
     name: '*'
     state: latest
 - name: "Install Dependencies"
-  yum:
+  ansible.builtin.yum:
     name: '{{ item }}'
     state: present
   loop:
