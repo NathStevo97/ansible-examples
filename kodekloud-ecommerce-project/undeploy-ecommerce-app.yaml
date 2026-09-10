@@ -13,14 +13,14 @@
       name: '{{ db_name }}'
       state: absent
   - name: 'uninstalling python-3 mysql libraries'
-    yum: 
+    yum:
       name: MySQL-python
       state: absent
   - name: "Uninstall MariaDB"
     yum:
       name: mariadb-server
       state: absent
-    become: true 
+    become: true
   - name: "Uninstall Firewalld"
     yum:
       name: firewalld
@@ -47,8 +47,8 @@
       name: git
       state: absent
   - name: "Uninstall Required Packages for Apache Web Server"
-    yum: 
-      name: '{{item}}'
+    yum:
+      name: '{{ item }}'
       state: absent
     become: true
     loop:

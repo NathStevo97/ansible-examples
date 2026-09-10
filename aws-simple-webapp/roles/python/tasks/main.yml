@@ -18,7 +18,7 @@
 
 - name: "Install Dependencies"
   yum:
-    name: '{{item}}'
+    name: '{{ item }}'
     state: present
   loop:
   - "epel-release"

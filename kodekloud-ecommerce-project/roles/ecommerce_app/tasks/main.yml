@@ -1,8 +1,8 @@
 ---
 # tasks file for ecommerce_app
   - name: "Install Required Packages for Apache Web Server"
-    yum: 
-      name: '{{item}}'
+    yum:
+      name: '{{ item }}'
       state: present
     become: true
     loop:
@@ -23,7 +23,7 @@
     become: true
 
   - name: "Configure httpd to use index.php"
-    shell: sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
+    ansible.builtin.shell: sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
     become: true
   - name: "start and enable httpd service"
     service:
@@ -43,7 +43,7 @@
     command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
     when: git_exists.stat.exists == False
   - name: "Point index.php to Database Server (Target2)"
-    shell: sed -i 's/172.20.1.101/{{db_server_ip}}/g' /var/www/html/index.php
+    ansible.builtin.shell: sed -i 's/172.20.1.101/{{db_server_ip}}/g' /var/www/html/index.php
     become: true
   - name: "Test httpd webhost"
     uri:
@@ -54,5 +54,3 @@
       name: httpd_can_network_connect
       state: yes
       persistent: yes
-
-

@@ -2,7 +2,7 @@
 # tasks file for python_uninstall
    - name: "Uninstall Dependencies"
      yum:
-       name: '{{item}}'
+       name: '{{ item }}'
        state: absent
      loop:
      - "epel-release"

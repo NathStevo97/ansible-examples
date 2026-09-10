@@ -13,7 +13,7 @@
 - name: "Install MySQL Community Repository"
   yum:
     name: "https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm"
-    state: present 
+    state: present
 
 - name: "Install MySQL database"
   yum:
@@ -25,7 +25,7 @@
   #- "mysql-client"
   - "mysql-community-client-plugins"
   - "mysql-connector-python"
-   
+
 - name: "Create MySQL configuration file"
   copy:
     content: |
@@ -33,7 +33,7 @@
       user=root
       password="@targ8et"
     dest: "/etc/.my.cnf"
-   
+
 - name: "Start MySQL DB Service"
   service:
     name: mysqld
@@ -60,7 +60,7 @@
     state: present
 
 - name: "Upgrade MySQL Database"
-  shell: mysql_upgrade --force
+  ansible.builtin.shell: mysql_upgrade --force
 
 - name: "Create Application DB User"
   mysql_user:
