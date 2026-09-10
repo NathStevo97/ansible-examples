@@ -3,7 +3,7 @@
   - name: "Upgrade Yum Packages"
     yum:
       name: '*'
-      state: latest  
+      state: latest
   - name: "Install Firewalld"
     yum:
       name: firewalld

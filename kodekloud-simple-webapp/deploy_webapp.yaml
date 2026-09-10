@@ -4,7 +4,7 @@
    become: true
    roles:
    - python
-   - mysql_db 
+   - mysql_db
 
  - name: "Deploy Web Server"
    hosts: ansible-target2
