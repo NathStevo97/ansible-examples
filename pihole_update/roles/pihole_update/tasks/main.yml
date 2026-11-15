@@ -2,18 +2,18 @@
 ---
 # tasks file for pihole_update
 
-- name: Get Pi-hole versions
+- name: Run pihole -up --check-only to determine whether Pi-hole upgrade is needed
   ansible.builtin.command:
-    cmd: pihole -v
-  register: pihole_update_pihole_version
+    cmd: pihole -up --check-only
+  register: pihole_update_available_status
   changed_when: false
 
 - name: Determine whether Pi-hole upgrade is needed
   ansible.builtin.set_fact:
     pihole_update_needed: >-
       {{
-        'update available' in (pihole_update_pihole_version.stdout | lower)
-        or 'updates are available' in (pihole_update_pihole_version.stdout | lower)
+        'update available' in (pihole_update_available_status.stdout | lower)
+        or 'updates are available' in (pihole_update_available_status.stdout | lower)
       }}
 
 - name: Upgrade Pi-hole
@@ -24,7 +24,7 @@
   changed_when: true
 
 - name: Show Pi-hole upgrade output
-  ansible.builtin.ansible.builtin.debug:
+  ansible.builtin.debug:
     var: pihole_update_pihole_upgrade.stdout_lines
   when:
     - pihole_update_pihole_upgrade is defined
